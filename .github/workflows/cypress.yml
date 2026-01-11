@@ -1,0 +1,72 @@
+# Nome do workflow que aparecerá na aba "Actions" do GitHub
+name: Cypress E2E Tests
+
+# Define quando o workflow será executado
+on:
+  # Executa quando houver push
+  push:
+    # Apenas para as branches principais
+    branches: [ "main", "master" ]
+
+  # Executa quando houver Pull Request
+  pull_request:
+    # Apenas para as branches principais
+    branches: [ "main", "master" ]
+
+# Define os jobs do workflow
+jobs:
+  # Nome do job
+  cypress-run:
+
+    # Sistema operacional da máquina virtual
+    runs-on: ubuntu-latest
+
+    # Lista de etapas (steps) que o job irá executar
+    steps:
+
+      # 1️⃣ Faz checkout do código do repositório
+      # Sem isso, o workflow não tem acesso ao projeto
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Configura o Node.js no ambiente da CI
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          # Versão do Node.js utilizada
+          # Node 18 é LTS e compatível com Cypress 15+
+          node-version: 18
+
+      # 3️⃣ Instala as dependências do projeto
+      # Usa o package.json e package-lock.json
+      - name: Install dependencies
+        run: npm install
+
+      # 4️⃣ Executa os testes Cypress em modo headless
+      # Ideal para ambientes de CI/CD
+      - name: Run Cypress tests
+        run: npx cypress run
+
+      # 5️⃣ Faz upload dos screenshots apenas se o job *falhar*
+      # Ajuda na análise de erros
+      - name: Upload screenshots (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          # Nome do artefato que aparecerá no GitHub
+          name: cypress-screenshots
+
+          # Caminho padrão onde o Cypress salva screenshots
+          path: cypress/screenshots
+
+      # 6️⃣ Faz upload dos vídeos da execução
+      # Executa *sempre*, mesmo se os testes falharem
+      - name: Upload videos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          # Nome do artefato de vídeo
+          name: cypress-videos
+
+          # Caminho padrão onde o Cypress salva vídeos
+          path: cypress/videos
