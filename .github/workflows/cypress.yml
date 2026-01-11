@@ -6,24 +6,22 @@ on:
   # Executa quando houver push
   push:
     # Apenas para as branches principais
-    branches: [ "main", "master" ]
+    branches: ["main", "master"]
 
   # Executa quando houver Pull Request
   pull_request:
     # Apenas para as branches principais
-    branches: [ "main", "master" ]
+    branches: ["main", "master"]
 
 # Define os jobs do workflow
 jobs:
   # Nome do job
   cypress-run:
-
     # Sistema operacional da máquina virtual
     runs-on: ubuntu-latest
 
     # Lista de etapas (steps) que o job irá executar
     steps:
-
       # 1️⃣ Faz checkout do código do repositório
       # Sem isso, o workflow não tem acesso ao projeto
       - name: Checkout repository
@@ -34,8 +32,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           # Versão do Node.js utilizada
-          # Node 18 é LTS e compatível com Cypress 15+
-          node-version: 18
+          # Node fixado para compatibilidade com Cypress 15
+          node-version: 18.18.2
 
       # 3️⃣ Instala as dependências do projeto
       # Usa o package.json e package-lock.json
