@@ -1,14 +1,40 @@
-describe('SauceDemo - Login', () => {
+// Suite de testes relacionada ao login
+describe('Login - SauceDemo', () => {
+
+  // Executa antes de cada teste
   beforeEach(() => {
-    cy.visit('https://www.saucedemo.com/');
+    // Acessa a página inicial (usa baseUrl)
+    cy.visit('/');
   });
 
-  it('Deve logar com sucesso e exibir produtos', () => {
-    cy.get('[data-test="username"]').should('be.visible').type('standard_user');
-    cy.get('[data-test="password"]').should('be.visible').type('secret_sauce');
-    cy.get('[data-test="login-button"]').should('be.visible').click();
+  // Cenário de login com sucesso
+  it('Deve realizar login com sucesso', () => {
 
-    cy.url().should('include', '/inventory.html');
-    cy.get('.title').should('have.text', 'Products');
+    // Carrega dados do fixture
+    cy.fixture('users').then((users) => {
+
+      // Executa login com usuário válido
+      cy.login(users.standard);
+    });
+
+    // Valida que o título da página de produtos é exibido
+    cy.get('.title')
+      .should('be.visible')
+      .and('have.text', 'Products');
+  });
+
+  // Cenário de login com usuário bloqueado
+  it('Não deve permitir login com usuário bloqueado', () => {
+    
+    // Carrega dados do fixture
+    cy.fixture('users').then((users) => {
+      // Executa login com usuário bloqueado
+      cy.login(users.locked);
+    });
+
+    // Valida mensagem de erro
+    cy.get('[data-test="error"]')
+      .should('be.visible')
+      .and('contain.text', 'locked out');
   });
 });

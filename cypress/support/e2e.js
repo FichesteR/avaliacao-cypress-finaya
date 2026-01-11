@@ -1,17 +1,14 @@
-// ***********************************************************
-// This example support/e2e.js is processed and
-// loaded automatically before your test files.
-//
-// This is a great place to put global configuration and
-// behavior that modifies Cypress.
-//
-// You can change the location of this file or turn off
-// automatically serving support files with the
-// 'supportFile' configuration option.
-//
-// You can read more here:
-// https://on.cypress.io/configuration
-// ***********************************************************
+// Importa todos os comandos customizados
+import './commands';
 
-// Import commands.js using ES2015 syntax:
-import './commands'
+// Listener global de falhas
+// Executa sempre que um teste falhar
+Cypress.on('fail', (error, runnable) => {
+
+  // Loga a mensagem de erro no relatório do Cypress
+  cy.log('❌ Teste falhou:', error.message);
+
+  // Re-lança o erro para que o teste continue falhando
+  // (não mascarar falhas)
+  throw error;
+});
